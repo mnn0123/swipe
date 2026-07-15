@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>華大さんと千鳥くん スワイプLP モックアップ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0d0f;
+    --ink:#f5f5f0;
+    --ink-muted:#b7b7b0;
+    --alert:#e6394a;
+    --gold:#f2b705;
+    --gold-soft:#332507;
+    --sans:'Noto Sans JP', sans-serif;
+    --display:'Zen Kaku Gothic New', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:#e9e7e0;
+    font-family:var(--sans);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+  }
+  .page-note{
+    position:fixed;
+    top:16px; left:0; right:0;
+    text-align:center;
+    font-size:12px;
+    color:#6b6b64;
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- Phone shell ---------- */
+  .phone{
+    width:min(390px, 92vw);
+    aspect-ratio:390/800;
+    background:var(--bg);
+    border-radius:36px;
+    box-shadow:0 0 0 8px #1c1c1e, 0 20px 50px rgba(0,0,0,0.25);
+    position:relative;
+    overflow:hidden;
+  }
+  .notch{
+    position:absolute;
+    top:0; left:50%; transform:translateX(-50%);
+    width:120px; height:22px;
+    background:#1c1c1e;
+    border-radius:0 0 16px 16px;
+    z-index:30;
+  }
+
+  /* ---------- Progress bars (story style) ---------- */
+  .progress-row{
+    position:absolute;
+    top:14px; left:14px; right:14px;
+    display:flex; gap:4px;
+    z-index:25;
+  }
+  .progress-track{
+    flex:1; height:3px; border-radius:2px;
+    background:rgba(255,255,255,0.3);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:#fff;
+    border-radius:2px;
+  }
+  .progress-fill.filled{width:100%;}
+  .progress-fill.active{ animation:grow linear forwards; }
+  @keyframes grow{ from{width:0%;} to{width:100%;} }
+
+  .top-tag{
+    position:absolute;
+    top:29px; left:14px;
+    z-index:25;
+    font-family:var(--mono);
+    font-size:9.5px;
+    font-weight:500;
+    color:rgba(255,255,255,0.65);
+    letter-spacing:0.02em;
+    text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+  .handle-wm{
+    position:absolute;
+    top:29px; right:14px;
+    z-index:25;
+    font-family:var(--mono);
+    font-size:9.5px;
+    font-weight:500;
+    color:rgba(255,255,255,0.65);
+    text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+
+  /* ---------- Slides: stacked crossfade, full-bleed ---------- */
+  .slides{ position:absolute; inset:0; }
+  .slide{
+    position:absolute; inset:0;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .65s ease;
+    background:#000;
+  }
+  .slide.active{ opacity:1; pointer-events:auto; }
+
+  /* nav zones */
+  .nav-zone{ position:absolute; top:0; bottom:0; width:50%; z-index:20; }
+  .nav-zone.left{left:0;}
+  .nav-zone.right{right:0;}
+
+  /* ---------- Full-bleed photo ---------- */
+  .bg-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; }
+  .tk-scrim{
+    position:absolute; inset:0; z-index:2;
+    background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 46%, rgba(0,0,0,.5) 74%, rgba(0,0,0,.72) 100%);
+  }
+
+  /* ---------- TikTok-style chrome ---------- */
+  .tk-logo{
+    position:absolute; top:58px; left:16px; z-index:6;
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(135deg,#2a5d8f 0 25%, var(--alert) 25% 50%, var(--gold) 50% 75%, #3f7a4a 75% 100%);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.5), 0 0 0 2px rgba(255,255,255,.85);
+  }
+  .tk-logo span{
+    font-family:var(--display); font-weight:900; font-size:7.5px; color:#fff;
+    text-align:center; line-height:1.15; text-shadow:0 1px 1px rgba(0,0,0,.4);
+  }
+  .q-card{
+    position:absolute; top:102px; left:16px; right:16px; z-index:6;
+    background:rgba(255,255,255,0.97); color:#15130a;
+    border-radius:13px; padding:11px 14px;
+    font-family:var(--display); font-weight:900; font-size:15px; line-height:1.4;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+  }
+
+  .big-line-wrap{ position:absolute; left:16px; right:16px; bottom:118px; z-index:6; }
+  .big-line{
+    font-family:var(--display); font-weight:900; font-size:24px; line-height:1.32;
+    color:#fff;
+    -webkit-text-stroke:1.3px rgba(0,0,0,.55);
+    text-shadow:0 2px 8px rgba(0,0,0,.5);
+    margin-bottom:5px;
+  }
+  .big-line.accent{ color:var(--gold); }
+  .big-line.small{ font-size:19px; }
+
+  .tk-bottom{ position:absolute; left:16px; right:16px; bottom:18px; z-index:6; }
+  .tk-hashtag-pill{
+    display:inline-block; background:rgba(255,255,255,.16); backdrop-filter:blur(4px);
+    color:#fff; font-size:10.5px; font-weight:600; padding:4px 10px; border-radius:20px; margin-bottom:8px;
+  }
+  .tk-account{ font-size:12px; font-weight:700; color:#fff; margin-bottom:4px; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+  .tk-account .date{ font-weight:400; color:rgba(255,255,255,.65); margin-left:6px; }
+  .tk-desc{ font-size:11px; color:rgba(255,255,255,.88); line-height:1.55; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+  .tk-desc .more{ color:rgba(255,255,255,.6); }
+
+  .broadcast-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--display); font-weight:700; font-size:10.5px;
+    color:#1a1200; background:var(--gold);
+    padding:4px 10px; border-radius:20px; margin-bottom:8px;
+  }
+
+  /* confetti (slide 5) */
+  .confetti-piece{ position:absolute; top:-20px; width:7px; height:11px; opacity:0.85; z-index:3; animation:fall linear infinite; }
+  @keyframes fall{ 0%{ transform:translateY(0) rotate(0deg); opacity:0.9; } 100%{ transform:translateY(560px) rotate(280deg); opacity:0.6; } }
+
+  /* ---------- Slide 6: CTA (own page, not a fake post) ---------- */
+  .s6-inner{
+    position:absolute; inset:0; z-index:5;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    padding:0 22px;
+  }
+  .cta-eyebrow{ font-family:var(--mono); font-size:11px; color:var(--gold); letter-spacing:.06em; margin-bottom:10px; }
+  .cta-title{ font-family:var(--display); font-weight:900; font-size:22px; color:#fff; line-height:1.4; margin-bottom:8px; text-shadow:0 2px 10px rgba(0,0,0,.5); }
+  .cta-sub{ font-size:12.5px; color:rgba(255,255,255,.75); margin-bottom:20px; }
+  .btn-stack{ display:flex; flex-direction:column; gap:12px; width:100%; }
+  .btn{
+    display:block; text-decoration:none;
+    padding:14px 18px; border-radius:8px;
+    font-family:var(--display); font-weight:700; font-size:14px;
+  }
+  .btn-primary{ background:var(--gold); color:#1a1200; }
+  .btn-secondary{ background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,0.35); backdrop-filter:blur(4px); }
+  .s6 .tk-scrim{ background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.72) 55%, rgba(0,0,0,.85) 100%); }
+</style>
+</head>
+<body>
+
+<div class="page-note">モバイル表示推奨 / 左右タップまたはスワイプでスライド送り(フェード切り替え)</div>
+
+<div class="phone" id="phone">
+  <div class="notch"></div>
+  <div class="progress-row" id="progressRow"></div>
+  <div class="top-tag">KTV SWIPE PREVIEW</div>
+  <div class="handle-wm">@hanadai_chidori</div>
+
+  <div class="slides" id="slides">
+
+    <!-- Slide 1: HOOK -->
+    <div class="slide s1 active">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/07/pic_-1-1.jpg" alt="" loading="eager">
+      <div class="tk-scrim"></div>
+      <div class="tk-logo"><span>華大<br>千鳥</span></div>
+      <div class="q-card">顔つきが変わった理由、知ってる？</div>
+      <div class="big-line-wrap">
+        <div class="big-line">「俺は最近ずっと<br>引き締まってます!」</div>
+      </div>
+      <div class="tk-bottom">
+        <div class="tk-hashtag-pill">#くじ引き弁明</div>
+        <div class="tk-account">火曜は全力！華大さんと千鳥くん<span class="date">・7-14</span></div>
+        <div class="tk-desc">くじ引き直後、まさかの疑惑と弁明。 <span class="more">#千鳥 #華大 #timelesz もっと見る</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 2: STAKES -->
+    <div class="slide s2">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/07/pic_-3-1.jpg" alt="" loading="lazy" style="object-position:8% center;">
+      <div class="tk-scrim"></div>
+      <div class="tk-logo"><span>華大<br>千鳥</span></div>
+      <div class="q-card">この中の"スパイ"は、誰?</div>
+      <div class="big-line-wrap">
+        <div class="big-line small">見破れば没収、<br>隠せば独り占め。</div>
+      </div>
+      <div class="tk-bottom">
+        <div class="tk-hashtag-pill">#スパイ7分の1</div>
+        <div class="tk-account">火曜は全力！華大さんと千鳥くん<span class="date">・7-14</span></div>
+        <div class="tk-desc">3つのゲームに挑む、頭脳戦のルールとは。 <span class="more">#スパイ #心理戦 もっと見る</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 3: CAST -->
+    <div class="slide s3">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/07/pic_-5-1.jpg" alt="" loading="lazy">
+      <div class="tk-scrim"></div>
+      <div class="tk-logo"><span>華大<br>千鳥</span></div>
+      <div class="q-card">今回参戦するのは…</div>
+      <div class="big-line-wrap">
+        <div class="big-line accent">「人をダマす役、<br>ちょっと近いかも」</div>
+      </div>
+      <div class="tk-bottom">
+        <div class="tk-hashtag-pill">#ゲスト初参戦</div>
+        <div class="tk-account">火曜は全力！華大さんと千鳥くん<span class="date">・7-14</span></div>
+        <div class="tk-desc">timelesz・寺西拓人が初参戦。 <span class="more">#timelesz #オズワルド もっと見る</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 4: MOMENT -->
+    <div class="slide s4">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/07/pic_-4-1.jpg" alt="" loading="lazy" style="object-position:15% center;">
+      <div class="tk-scrim"></div>
+      <div class="tk-logo"><span>華大<br>千鳥</span></div>
+      <div class="q-card">収録序盤で、空気が変わった。</div>
+      <div class="big-line-wrap">
+        <div class="big-line small">伊藤「信じられない<br>タイミングで渡してくる」</div>
+        <div class="big-line small accent">寺西「いやいや<br>これはおかしいなぁ」</div>
+      </div>
+      <div class="tk-bottom">
+        <div class="tk-hashtag-pill">#疑惑</div>
+        <div class="tk-account">火曜は全力！華大さんと千鳥くん<span class="date">・7-14</span></div>
+        <div class="tk-desc">ツッコミと言い訳が止まらない。 <span class="more">#珍回答 もっと見る</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 5: CLIMAX + brand reveal -->
+    <div class="slide s5">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/07/pic_-6-1.jpg" alt="" loading="lazy">
+      <div class="tk-scrim"></div>
+      <div class="confetti-piece" style="left:12%; background:#f2b705; animation-duration:2.6s; animation-delay:0s;"></div>
+      <div class="confetti-piece" style="left:26%; background:#e6394a; animation-duration:3.1s; animation-delay:.4s;"></div>
+      <div class="confetti-piece" style="left:40%; background:#f5f5f0; animation-duration:2.3s; animation-delay:.8s;"></div>
+      <div class="confetti-piece" style="left:58%; background:#f2b705; animation-duration:2.9s; animation-delay:.2s;"></div>
+      <div class="confetti-piece" style="left:72%; background:#e6394a; animation-duration:2.5s; animation-delay:1.1s;"></div>
+      <div class="confetti-piece" style="left:85%; background:#f5f5f0; animation-duration:3.3s; animation-delay:.6s;"></div>
+      <div class="tk-logo"><span>華大<br>千鳥</span></div>
+      <div class="q-card">最後の1票で、正体は暴かれるのか?</div>
+      <div class="big-line-wrap">
+        <div class="big-line">全員が疑心暗鬼に——</div>
+      </div>
+      <div class="tk-bottom">
+        <div class="broadcast-pill">毎週火曜 22:00〜 カンテレ・フジテレビ系</div>
+        <div class="tk-account">華大さんと千鳥くん<span class="date">・7-14 OA</span></div>
+        <div class="tk-desc">スパイの正体は、まだ誰も知らない。 <span class="more">もっと見る</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 6: CTA -->
+    <div class="slide s6">
+      <img class="bg-photo" src="https://www.ktv.jp/hanadai-chidori/wp-content/uploads/sites/144/2026/04/1200_630.jpg" alt="" loading="lazy">
+      <div class="tk-scrim"></div>
+      <div class="s6-inner">
+        <div class="cta-eyebrow">@hanadai_chidori</div>
+        <div class="cta-title">結末が気になる方はこちら</div>
+        <div class="cta-sub">見逃し配信は無料で今すぐチェックできます</div>
+        <div class="btn-stack">
+          <a class="btn btn-primary" href="https://tver.jp/series/sr0vdmdczk?utm_source=KTV-WEB&amp;utm_medium=referral&amp;utm_campaign=hanadai-chidori" target="_blank" rel="noopener">TVerで見逃し配信を見る</a>
+          <a class="btn btn-secondary" href="https://www.ktv.jp/hanadai-chidori/" target="_blank" rel="noopener">番組公式サイトへ</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-zone left" onclick="prevSlide()"></div>
+  <div class="nav-zone right" onclick="nextSlide()"></div>
+</div>
+
+<script>
+  const total = 6;
+  const durations = [3200, 3600, 4000, 4400, 3800, 999999]; // ms per slide, last slide no auto-advance
+  let current = 0;
+  let timer = null;
+
+  const slidesEl = document.getElementById('slides');
+  const slideEls = Array.from(slidesEl.querySelectorAll('.slide'));
+  const progressRow = document.getElementById('progressRow');
+
+  for(let i=0;i<total;i++){
+    const track = document.createElement('div');
+    track.className = 'progress-track';
+    const fill = document.createElement('div');
+    fill.className = 'progress-fill';
+    fill.id = 'fill-'+i;
+    track.appendChild(fill);
+    progressRow.appendChild(track);
+  }
+
+  function render(){
+    slideEls.forEach((el,i)=>{ el.classList.toggle('active', i===current); });
+    for(let i=0;i<total;i++){
+      const fill = document.getElementById('fill-'+i);
+      fill.classList.remove('active','filled');
+      fill.style.animation = 'none';
+      fill.style.width = '0%';
+      if(i < current){ fill.classList.add('filled'); }
+      if(i === current){
+        void fill.offsetWidth;
+        fill.style.animation = `grow linear forwards`;
+        fill.style.animationDuration = durations[current] + 'ms';
+      }
+    }
+  }
+
+  function clearTimer(){ if(timer) clearTimeout(timer); }
+
+  function scheduleNext(){
+    clearTimer();
+    if(current < total - 1){
+      timer = setTimeout(()=>{ nextSlide(); }, durations[current]);
+    }
+  }
+
+  function goTo(i){
+    if(i < 0 || i >= total) return;
+    current = i;
+    render();
+    scheduleNext();
+  }
+
+  function nextSlide(){ goTo(Math.min(current+1, total-1)); }
+  function prevSlide(){ goTo(Math.max(current-1, 0)); }
+
+  // touch swipe
+  let startX = 0;
+  const phone = document.getElementById('phone');
+  phone.addEventListener('touchstart', e=>{ startX = e.touches[0].clientX; });
+  phone.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - startX;
+    if(dx > 40) prevSlide();
+    else if(dx < -40) nextSlide();
+  });
+
+  render();
+  scheduleNext();
+</script>
+
+</body>
+</html>
